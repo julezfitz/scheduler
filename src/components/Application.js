@@ -3,6 +3,7 @@ import DayList from "components/DayList.js";
 import React, { useState, useEffect } from "react";
 import Appointment from "./Appointment/index.js";
 import axios from "axios";
+import { getAppointmentsForDay } from "helpers/selectors";
 
 const appointments = {
   "1": {
