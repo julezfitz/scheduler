@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-let mode;
-let setMode;
-
 export const useVisualMode = function (initial) {
-  [mode, setMode] = useState(initial);
+  const [mode, setMode] = useState(initial);
   const [history, setHistory] = useState([initial]);
 
   const transition = function (newMode, replace = false) {
