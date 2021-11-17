@@ -7,6 +7,10 @@ import { getInterviewersForDay, getAppointmentsForDay, getInterviewer } from "..
 
 export default function Application(props) {
 
+  const bookInterview = function(id, interview) {
+    console.log(id, interview);
+  }
+
   const [state, setState] = useState({
     day: "Monday",
     days: [],
@@ -46,6 +50,7 @@ export default function Application(props) {
         time={appointment.time}
         interview={interviewer}
         interviewers={dailyInterviewers}
+        bookInterview = {bookInterview}
       />
     )
   })
