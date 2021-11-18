@@ -36,25 +36,36 @@ export default function Application(props) {
       ...state.appointments[id],
       interview: { ...interview }
     };
-    console.log("the new appointment") //this is all correct - looks like {id:6, interview:{}, time:12}
-    console.log(appointment);
 
-    //add new appointment to appointments which doesn't work
     const appointmentsList = state.appointments;
     appointmentsList[id] = appointment;
 
-    console.log(appointmentsList, "appointments list"); // not being added to this list
-
     return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview })
       .then(response => {
-        console.log(state, "before state");
         setState(prev => ({...prev, appointments: appointmentsList}))
-        console.log(state, "after state")
       })
       .catch(err => {
         console.error(err.response.data);
       });
+  }
 
+  const cancelInterview = function (id) {
+    // find the right appointment slot and set it's interview data to null.
+      const setInterviewNull = {
+        ...state.appointments[id],
+        interview: null
+      };
+
+      const appointmentsList = state.appointments;
+      appointmentsList[id] = setInterviewNull;
+
+      return axios.delete(`http://localhost:8001/api/appointments/${id}`)
+      .then(response => {
+        setState(prev => ({...prev, appointments: appointmentsList}))
+      })
+      .catch(err => {
+        console.error(err.response.data);
+      });
   }
 
   //format appointments
@@ -72,6 +83,7 @@ export default function Application(props) {
         interview={interviewer}
         interviewers={dailyInterviewers}
         bookInterview={bookInterview}
+        onDelete={cancelInterview}
       />
     )
   })
