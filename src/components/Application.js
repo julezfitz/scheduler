@@ -7,10 +7,6 @@ import { getInterviewersForDay, getAppointmentsForDay, getInterviewer } from "..
 
 export default function Application(props) {
 
-  const bookInterview = function(id, interview) {
-    console.log(id, interview);
-  }
-
   const [state, setState] = useState({
     day: "Monday",
     days: [],
@@ -21,25 +17,50 @@ export default function Application(props) {
   let dailyAppointments = [];
   let dailyInterviewers = [];
 
-  const setDay = day => setState({ ...state, day });
-
-  // const setDays = (days) => setState(prev => ({ ...prev, days }));
-
   useEffect(() => {
     Promise.all([
       axios.get(`http://localhost:8001/api/days`),
       axios.get(`http://localhost:8001/api/appointments`),
       axios.get(`http://localhost:8001/api/interviewers`),
     ]).then((all) => {
-      setState(prev => ({...prev, days: all[0].data, appointments: all[1].data, interviewers: all[2].data}));
+      setState(prev => ({ ...prev, days: all[0].data, appointments: all[1].data, interviewers: all[2].data }));
     })
   }, []);
+
+  const setDay = day => setState(prev => ({ ...prev, day }));
+
+  const bookInterview = function (id, interview) {
+
+    //update existing appointment slot
+    const appointment = {
+      ...state.appointments[id],
+      interview: { ...interview }
+    };
+    console.log("the new appointment") //this is all correct - looks like {id:6, interview:{}, time:12}
+    console.log(appointment);
+
+    //add new appointment to appointments which doesn't work
+    const appointmentsList = state.appointments;
+    appointmentsList[id] = appointment;
+
+    console.log(appointmentsList, "appointments list"); // not being added to this list
+
+    return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview })
+      .then(response => {
+        console.log(state, "before state");
+        setState(prev => ({...prev, appointments: appointmentsList}))
+        console.log(state, "after state")
+      })
+      .catch(err => {
+        console.error(err.response.data);
+      });
+
+  }
 
   //format appointments
   dailyAppointments = getAppointmentsForDay(state, state.day);
 
   dailyInterviewers = getInterviewersForDay(state, state.day);
-  console.log(dailyInterviewers);
 
   const appointmentsDisplay = dailyAppointments.map(appointment => {
     const interviewer = getInterviewer(state, appointment.interview);
@@ -50,7 +71,7 @@ export default function Application(props) {
         time={appointment.time}
         interview={interviewer}
         interviewers={dailyInterviewers}
-        bookInterview = {bookInterview}
+        bookInterview={bookInterview}
       />
     )
   })
