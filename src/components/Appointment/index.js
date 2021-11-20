@@ -4,6 +4,7 @@ import Show from "./Show.js";
 import Empty from "./Empty.js";
 import Status from "./Status.js";
 import Confirm from "./Confirm.js";
+import Error from "./Error.js";
 import Form from "./Form.js";
 import React, { Fragment } from 'react'
 import { useVisualMode } from "../../hooks/useVisualMode";
@@ -15,6 +16,8 @@ const SAVING = "SAVING";
 const DELETING = "DELETING";
 const CONFIRM = "CONFIRM";
 const EDIT = "EDIT";
+const ERROR_SAVE = "ERROR_SAVE";
+const ERROR_DELETE = "ERROR_DELETE";
 
 export default function Appointment(props) {
 
@@ -26,12 +29,15 @@ export default function Appointment(props) {
 
     transition(SAVING);
 
-    props.bookInterview(props.id, interview).then(() => { transition(SHOW) })
+    props.bookInterview(props.id, interview)
+    .then(() => { transition(SHOW) })
+    .catch((error) => { transition(ERROR_SAVE) })
   }
 
   const deleteItem = function () {
     transition(DELETING);
     props.onDelete(props.id).then(() => { transition(EMPTY) })
+    .catch((error) => { transition(ERROR_DELETE) })
   }
 
   const confirmDelete = function () {
@@ -41,7 +47,6 @@ export default function Appointment(props) {
   const editInterview = function () {
     console.log(props);
     transition(EDIT);
-
   }
 
   const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY)
@@ -52,8 +57,8 @@ export default function Appointment(props) {
     <article className="appointment">
       <Header time={props.time} />
       { mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-      {mode === SAVING && <Status message={"Saving"} />}
-      {mode === CONFIRM && (
+      { mode === SAVING && <Status message={"Saving"} />}
+      { mode === CONFIRM && (
         <Confirm
           message={"Are you sure you would like to delete?"}
           onConfirm={deleteItem}
@@ -61,7 +66,7 @@ export default function Appointment(props) {
         />
       )
       }
-      {mode === DELETING && <Status message={"Deleting"} />}
+      { mode === DELETING && <Status message={"Deleting"} />}
       { mode === EDIT && (
         <Form
           student={props.interview.student}
@@ -92,6 +97,8 @@ export default function Appointment(props) {
       />
       )
       }
+      { mode === ERROR_SAVE && <Error onClose={() => back()} message={"There was an error saving your interview"} />}
+      { mode === ERROR_DELETE && <Error onClose={() => back()} message={"There was an error deleting your interview"} />}
     </article>
   )
 }

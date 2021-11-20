@@ -42,30 +42,24 @@ export default function Application(props) {
 
     return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview })
       .then(response => {
-        setState(prev => ({...prev, appointments: appointmentsList}))
+        setState(prev => ({ ...prev, appointments: appointmentsList }))
       })
-      .catch(err => {
-        console.error(err.response.data);
-      });
   }
 
   const cancelInterview = function (id) {
     // find the right appointment slot and set it's interview data to null.
-      const setInterviewNull = {
-        ...state.appointments[id],
-        interview: null
-      };
+    const setInterviewNull = {
+      ...state.appointments[id],
+      interview: null
+    };
 
-      const appointmentsList = state.appointments;
-      appointmentsList[id] = setInterviewNull;
+    const appointmentsList = state.appointments;
+    appointmentsList[id] = setInterviewNull;
 
-      return axios.delete(`http://localhost:8001/api/appointments/${id}`)
+    return axios.delete(`http://localhost:8001/api/appointments/${id}`)
       .then(response => {
-        setState(prev => ({...prev, appointments: appointmentsList}))
+        setState(prev => ({ ...prev, appointments: appointmentsList }))
       })
-      .catch(err => {
-        console.error(err.response.data);
-      });
   }
 
   //format appointments
