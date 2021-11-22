@@ -31,13 +31,13 @@ export default function Appointment(props) {
 
     props.bookInterview(props.id, interview)
     .then(() => { transition(SHOW) })
-    .catch((error) => { transition(ERROR_SAVE) })
+    .catch((error) => { transition(ERROR_SAVE, true) })
   }
 
   const deleteItem = function () {
-    transition(DELETING);
+    transition(DELETING, true);
     props.onDelete(props.id).then(() => { transition(EMPTY) })
-    .catch((error) => { transition(ERROR_DELETE) })
+    .catch((error) => { transition(ERROR_DELETE, true) })
   }
 
   const confirmDelete = function () {
@@ -45,13 +45,10 @@ export default function Appointment(props) {
   }
 
   const editInterview = function () {
-    console.log(props);
     transition(EDIT);
   }
 
   const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY)
-
-  console.log(props.interview);
 
   return (
     <article className="appointment">

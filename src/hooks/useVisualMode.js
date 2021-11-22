@@ -9,8 +9,9 @@ export const useVisualMode = function (initial) {
       //do nothing    
     } else {
       //add state to history
-      const addHistory = newMode => (setHistory([newMode, ...history]))
+      const addHistory = newMode => (setHistory(history => ([newMode, ...history])))
       addHistory(newMode);
+      console.log(history);
     }
     setMode(newMode)
   }
