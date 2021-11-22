@@ -22,6 +22,19 @@ export default function useApplicationData(props) {
 
   const setDay = day => setState(prev => ({ ...prev, day }));
 
+  //helper function to update the number of spots in state
+  const updateSpots = function (increment) {
+    let dayId;
+
+    if (state.day === "Monday") { dayId = 0; }
+    if (state.day === "Tuesday") { dayId = 1; }
+    if (state.day === "Wednesday") { dayId = 2; }
+    if (state.day === "Thursday") { dayId = 3; }
+    if (state.day === "Friday") { dayId = 4; }
+    
+    increment === "add" ? state.days[dayId].spots += 1 : state.days[dayId].spots -= 1;
+  }
+
   const bookInterview = function (id, interview) {
 
     //update existing appointment slot
@@ -34,6 +47,7 @@ export default function useApplicationData(props) {
     appointmentsList[id] = appointment;
 
     return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview })
+      .then(updateSpots("delete"))
       .then(response => {
         setState(prev => ({ ...prev, appointments: appointmentsList }))
       })
@@ -50,6 +64,7 @@ export default function useApplicationData(props) {
     appointmentsList[id] = setInterviewNull;
 
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
+      .then(updateSpots("add"))
       .then(response => {
         setState(prev => ({ ...prev, appointments: appointmentsList }))
       })
