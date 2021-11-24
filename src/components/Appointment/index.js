@@ -22,7 +22,6 @@ const ERROR_DELETE = "ERROR_DELETE";
 export default function Appointment(props) {
 
   const save = function (name, interviewer) {
-    console.log(interviewer)
     const interview = {
       student: name,
       interviewer

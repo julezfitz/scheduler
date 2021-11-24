@@ -11,7 +11,6 @@ export const useVisualMode = function (initial) {
       //add state to history
       const addHistory = newMode => (setHistory(history => ([newMode, ...history])))
       addHistory(newMode);
-      console.log(history);
     }
     setMode(newMode)
   }

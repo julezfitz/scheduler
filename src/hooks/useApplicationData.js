@@ -4,46 +4,45 @@ import axios from "axios";
 export default function useApplicationData(props) {
 
   const SET_DAY = "SET_DAY";
-const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
-const SET_INTERVIEW = "SET_INTERVIEW";
+  const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
+  const SET_INTERVIEW = "SET_INTERVIEW";
 
-function reducer(state, action) {
-  switch (action.type) {
-    case SET_DAY:
-      return { ...state, day: action.day }
-    case SET_APPLICATION_DATA:
-      return {
-        ...state,
-        days: action.days,
-        appointments: action.appointments,
-        interviewers: action.interviewers
-      }
-    case SET_INTERVIEW: {
-      if (action.interviewAction === "book") {
-        const newState = { days: [], day: state.day, interviewers: {...state.interviewers}, appointments: action.appointmentsList };
-        for (const day in state.days) {
-          newState.days[day] = {...state.days[day]};
+  function reducer(state, action) {
+    switch (action.type) {
+      case SET_DAY:
+        return { ...state, day: action.day }
+      case SET_APPLICATION_DATA:
+        return {
+          ...state,
+          days: action.days,
+          appointments: action.appointments,
+          interviewers: action.interviewers
         }
-        newState.days[action.dayId].spots = state.days[action.dayId].spots - 1;
-        console.log(newState);
-        return newState
-      }
-      else if (action.interviewAction === "cancel") {
-        const newState = { days: [], day: state.day, interviewers: {...state.interviewers}, appointments: action.appointmentsList };
-        for (const day in state.days) {
-          newState.days[day] = {...state.days[day]};
+      case SET_INTERVIEW: {
+        if (action.interviewAction === "book") {
+          const newState = { days: [], day: state.day, interviewers: { ...state.interviewers }, appointments: action.appointmentsList };
+          for (const day in state.days) {
+            newState.days[day] = { ...state.days[day] };
+          }
+          newState.days[action.dayId].spots = state.days[action.dayId].spots - 1;
+          return newState
         }
-        newState.days[action.dayId].spots = state.days[action.dayId].spots + 1;
-        return newState
+        else if (action.interviewAction === "cancel") {
+          const newState = { days: [], day: state.day, interviewers: { ...state.interviewers }, appointments: action.appointmentsList };
+          for (const day in state.days) {
+            newState.days[day] = { ...state.days[day] };
+          }
+          newState.days[action.dayId].spots = state.days[action.dayId].spots + 1;
+          return newState
+        }
+        return state
       }
-      return state
+      default:
+        throw new Error(
+          `Tried to reduce with unsupported action type: ${action.type}`
+        );
     }
-    default:
-      throw new Error(
-        `Tried to reduce with unsupported action type: ${action.type}`
-      );
   }
-}
   //how do I still default state like this?
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
@@ -53,6 +52,8 @@ function reducer(state, action) {
   });
 
   useEffect(() => {
+    const webSocket = new WebSocket('ws://localhost:8001');
+
     Promise.all([
       axios.get(`http://localhost:8001/api/days`),
       axios.get(`http://localhost:8001/api/appointments`),
@@ -60,7 +61,16 @@ function reducer(state, action) {
     ]).then((all) => {
       dispatch({ type: "SET_APPLICATION_DATA", days: all[0].data, appointments: all[1].data, interviewers: all[2].data })
     })
+      .then(() => webSocket.readyState,
+        webSocket.onopen = function (event) {
+          webSocket.send("ping");
+        })
+    webSocket.onmessage = function (event) {
+      console.log(`Message Received: ${event.data}`);
+    }
   }, []);
+
+
 
   //helper function to return the day ID to update the number of spots
   const updateSpots = function () {
