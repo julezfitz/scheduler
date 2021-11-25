@@ -6,7 +6,7 @@ import Status from "./Status.js";
 import Confirm from "./Confirm.js";
 import Error from "./Error.js";
 import Form from "./Form.js";
-import React, { Fragment } from 'react'
+import React, { useEffect } from 'react'
 import { useVisualMode } from "../../hooks/useVisualMode";
 
 const EMPTY = "EMPTY";
@@ -30,14 +30,14 @@ export default function Appointment(props) {
     transition(SAVING);
 
     props.bookInterview(props.id, interview)
-    .then(() => { transition(SHOW) })
-    .catch((error) => { transition(ERROR_SAVE, true) })
+      .then(() => { transition(SHOW) })
+      .catch((error) => { transition(ERROR_SAVE, true) })
   }
 
   const deleteItem = function () {
     transition(DELETING, true);
     props.onDelete(props.id).then(() => { transition(EMPTY) })
-    .catch((error) => { transition(ERROR_DELETE, true) })
+      .catch((error) => { transition(ERROR_DELETE, true) })
   }
 
   const confirmDelete = function () {
@@ -49,6 +49,19 @@ export default function Appointment(props) {
   }
 
   const { mode, transition, back } = useVisualMode(props.interview ? SHOW : EMPTY)
+
+  useEffect(() => {
+    //if interview and in empty mode
+    console.log(props.interview);
+    if (props.interview && mode === EMPTY) {
+      transition(SHOW)
+      console.log('here');
+    }
+    //if no interview and in show mode
+    if (props.interview === null && (mode === SHOW)) {
+      transition(EMPTY);
+     }
+  }, [props.interview, mode, transition]);
 
   return (
     <article className="appointment">
@@ -75,7 +88,7 @@ export default function Appointment(props) {
         />
       )
       }
-      { mode === SHOW && (
+      { mode === SHOW && props.interview && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}

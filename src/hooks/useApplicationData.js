@@ -19,23 +19,40 @@ export default function useApplicationData(props) {
           interviewers: action.interviewers
         }
       case SET_INTERVIEW: {
-        if (action.interviewAction === "book") {
-          const newState = { days: [], day: state.day, interviewers: { ...state.interviewers }, appointments: action.appointmentsList };
+        // {"type":"SET_INTERVIEW","id":2,"interview":{"student":"fsdfsf","interviewer":4}}
+        
+        //get interview day
+          const interviewDay = Math.floor((action.id - 1) / 5);
+          const newState = { days: [], day: state.day, interviewers: { ...state.interviewers }, appointments: {} };
+        
+          //make deep copy of state.days
           for (const day in state.days) {
             newState.days[day] = { ...state.days[day] };
           }
-          newState.days[action.dayId].spots = state.days[action.dayId].spots - 1;
-          return newState
-        }
-        else if (action.interviewAction === "cancel") {
-          const newState = { days: [], day: state.day, interviewers: { ...state.interviewers }, appointments: action.appointmentsList };
-          for (const day in state.days) {
-            newState.days[day] = { ...state.days[day] };
+
+          //make deep copy of appointments
+          for (const [key, appt] of Object.entries(state.appointments)) {
+            if (action.interview === null && action.id === parseInt(key)) {  
+              // cancel appointment
+              newState.appointments[key] = { ...appt, interview: null, interviewer: null };
+            } else {
+              newState.appointments[key] = { ...appt, interviewer: { ...appt.interviewer } };
+            }
           }
-          newState.days[action.dayId].spots = state.days[action.dayId].spots + 1;
-          return newState
-        }
-        return state
+          if (action.interview) {
+            // add interview
+            newState.appointments[action.id] = {
+              id: action.id,
+              time: (11 + (action.id - 1) % 5) % 12 + 1 + "pm",
+              interview: action.interview,
+            };
+          
+          }
+          newState.days[interviewDay].spots = (action.interview === null) ? 
+            state.days[interviewDay].spots + 1 :
+            state.days[interviewDay].spots - 1;
+          
+          return newState;
       }
       default:
         throw new Error(
@@ -54,75 +71,37 @@ export default function useApplicationData(props) {
   useEffect(() => {
     const webSocket = new WebSocket('ws://localhost:8001');
 
+    webSocket.onmessage = function (event) {
+      const action = JSON.parse(event.data);
+      if (action.type) {
+        dispatch(action);
+      }
+    };
+
     Promise.all([
       axios.get(`http://localhost:8001/api/days`),
       axios.get(`http://localhost:8001/api/appointments`),
       axios.get(`http://localhost:8001/api/interviewers`),
     ]).then((all) => {
       dispatch({ type: "SET_APPLICATION_DATA", days: all[0].data, appointments: all[1].data, interviewers: all[2].data })
-    })
-      .then(() => webSocket.readyState,
-        webSocket.onopen = function (event) {
-          webSocket.send("ping");
-        })
-    webSocket.onmessage = function (event) {
-      console.log(`Message Received: ${event.data}`);
-    }
+    }).then(() => webSocket.readyState,
+      webSocket.onopen = function (event) {
+        webSocket.send("ping");
+      })
   }, []);
 
-
-
-  //helper function to return the day ID to update the number of spots
-  const updateSpots = function () {
-    let dayId;
-    if (state.day === "Monday") { dayId = 0; }
-    if (state.day === "Tuesday") { dayId = 1; }
-    if (state.day === "Wednesday") { dayId = 2; }
-    if (state.day === "Thursday") { dayId = 3; }
-    if (state.day === "Friday") { dayId = 4; }
-    return dayId;
-  }
-
   const bookInterview = function (id, interview) {
-    //update existing appointment slot
-    const appointment = {
-      ...state.appointments[id],
-      interview: { ...interview }
-    };
-
-    const appointmentsList = state.appointments;
-    appointmentsList[id] = appointment;
-
     return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview })
-      .then(() => updateSpots())
-      .then(response => {
-        dispatch({ type: "SET_INTERVIEW", interviewAction: "book", dayId: response, appointmentsList: appointmentsList })
-      })
   }
 
   const cancelInterview = function (id) {
-    // find the right appointment slot and set it's interview data to null.
-    const setInterviewNull = {
-      ...state.appointments[id],
-      interview: null
-    };
-
-    const appointmentsList = state.appointments;
-    appointmentsList[id] = setInterviewNull;
-
     return axios.delete(`http://localhost:8001/api/appointments/${id}`)
-      .then(() => updateSpots())
-      .then(response => {
-        dispatch({ type: "SET_INTERVIEW", interviewAction: "cancel", dayId: response, appointmentsList: appointmentsList })
-      })
   }
 
-  let returnedStateVals = {
-    state: state,
+  return {
+    state,
     setDay: (day) => dispatch({ type: "SET_DAY", day }),
     bookInterview: bookInterview,
     cancelInterview: cancelInterview,
-  }
-
-  return returnedStateVals
+  };
 }
