@@ -35,14 +35,14 @@ https://github.com/lighthouse-labs/scheduler-api
 ## Project Views
 
 ### Schedule View
-!["Schedule View"]()
+!["Schedule View"](https://github.com/julezfitz/scheduler/blob/master/images/view.png)
 
 ### Create View
-!["Create View"]()
+!["Create View"](https://github.com/julezfitz/scheduler/blob/master/images/create-view.png)
 
 ### Edit View
-!["Edit View"]()
+!["Edit View"](https://github.com/julezfitz/scheduler/blob/master/images/edit-view.png)
 
 ### Delete View
-!["Delete View"]()
+!["Delete View"](https://github.com/julezfitz/scheduler/blob/master/images/delete-view.png)
 
