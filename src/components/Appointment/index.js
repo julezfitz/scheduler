@@ -52,10 +52,8 @@ export default function Appointment(props) {
 
   useEffect(() => {
     //if interview and in empty mode
-    console.log(props.interview);
     if (props.interview && mode === EMPTY) {
       transition(SHOW)
-      console.log('here');
     }
     //if no interview and in show mode
     if (props.interview === null && (mode === SHOW)) {
