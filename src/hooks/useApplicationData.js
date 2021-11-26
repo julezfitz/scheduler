@@ -18,9 +18,7 @@ export default function useApplicationData(props) {
           appointments: action.appointments,
           interviewers: action.interviewers
         }
-      case SET_INTERVIEW: {
-        // {"type":"SET_INTERVIEW","id":2,"interview":{"student":"fsdfsf","interviewer":4}}
-        
+      case SET_INTERVIEW: { 
         //get interview day
           const interviewDay = Math.floor((action.id - 1) / 5);
           const newState = { days: [], day: state.day, interviewers: { ...state.interviewers }, appointments: {} };
@@ -48,9 +46,15 @@ export default function useApplicationData(props) {
             };
           
           }
-          newState.days[interviewDay].spots = (action.interview === null) ? 
-            state.days[interviewDay].spots + 1 :
-            state.days[interviewDay].spots - 1;
+          
+          // if cancelling increase spots available by 1
+          if (action.interview === null) {
+            newState.days[interviewDay].spots = state.days[interviewDay].spots + 1;
+          }
+          // if the old state had no appointment in this slot, reduce the number of spots by 1
+          else if (state.appointments[action.id].interview === null) {
+            newState.days[interviewDay].spots = state.days[interviewDay].spots - 1;
+          }
           
           return newState;
       }
@@ -60,7 +64,7 @@ export default function useApplicationData(props) {
         );
     }
   }
-  //how do I still default state like this?
+
   const [state, dispatch] = useReducer(reducer, {
     day: "Monday",
     days: [],
