@@ -6,6 +6,7 @@ export default function useApplicationData(props) {
   const SET_DAY = "SET_DAY";
   const SET_APPLICATION_DATA = "SET_APPLICATION_DATA";
   const SET_INTERVIEW = "SET_INTERVIEW";
+  axios.defaults.baseURL = 'http://localhost:8001';
 
   function reducer(state, action) {
     switch (action.type) {
@@ -83,20 +84,20 @@ export default function useApplicationData(props) {
     };
 
     Promise.all([
-      axios.get(`http://localhost:8001/api/days`),
-      axios.get(`http://localhost:8001/api/appointments`),
-      axios.get(`http://localhost:8001/api/interviewers`),
+      axios.get(`/api/days`),
+      axios.get(`/api/appointments`),
+      axios.get(`/api/interviewers`),
     ]).then((all) => {
       dispatch({ type: "SET_APPLICATION_DATA", days: all[0].data, appointments: all[1].data, interviewers: all[2].data })
     })
   }, []);
 
   const bookInterview = function (id, interview) {
-    return axios.put(`http://localhost:8001/api/appointments/${id}`, { interview })
+    return axios.put(`/api/appointments/${id}`, { interview })
   }
 
   const cancelInterview = function (id) {
-    return axios.delete(`http://localhost:8001/api/appointments/${id}`)
+    return axios.delete(`/api/appointments/${id}`)
   }
 
   return {
