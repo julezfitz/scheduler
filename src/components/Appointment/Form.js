@@ -3,22 +3,36 @@ import "./styles.scss";
 import Button from "../Button.js"
 import InterviewerList from "../InterviewerList.js"
 
-
-
 export default function Form(props) {
 
   const [student, setStudent] = useState(props.student || "");
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
 
-  const reset = function() {
+  const reset = function () {
     setStudent("")
     setInterviewer(null)
     return;
   }
 
-  const cancel = function() {
+  const cancel = function () {
     reset();
     props.onCancel();
+  }
+
+  const [error, setError] = useState("");
+
+  function validate(name, interviewer) {
+    if (name === "") {
+      setError("Student name cannot be blank");
+      return;
+    }
+  //  else if (!interviewer) {
+    //   setError("Please choose an interviewer");
+    //   return;
+    // }
+    else {
+      props.onSave(name, interviewer);
+    }
   }
 
   return (
@@ -29,17 +43,19 @@ export default function Form(props) {
             className="appointment__create-input text--semi-bold"
             type="text"
             name="name"
+            data-testid="student-name-input"
             value={student}
             placeholder="Enter Student Name"
             onChange={(event) => setStudent(event.target.value)}
           />
         </form>
+        <section className="appointment__validation">{error}</section>
         <InterviewerList className="appointment__card-left" interviewers={props.interviewers} value={interviewer} onChange={setInterviewer} />
       </section>
 
       <section className="appointment__card-right">
         <section className="appointment__actions">
-          <Button className="appointment__card-right" confirm onClick={() => interviewer ? props.onSave(student, interviewer) : props.onSave(student, props.interviewers[0].id) }>Save</Button>
+          <Button className="appointment__card-right" confirm onClick={() => validate(student, interviewer)}>Save</Button>
           <Button className="appointment__card-right" danger onClick={cancel}>Cancel</Button>
         </section>
       </section>
