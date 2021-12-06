@@ -51,5 +51,11 @@
       "<rootDir>/node_modules/",
       "<rootDir>/.git/"
     ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js"
+    ]
   }
 }
