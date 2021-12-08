@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import "./styles.scss";
-import Button from "../Button.js"
-import InterviewerList from "../InterviewerList.js"
+import Button from "../Button.js";
+import InterviewerList from "../InterviewerList.js";
 
 export default function Form(props) {
-
   const [student, setStudent] = useState(props.student || "");
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
 
   const reset = function () {
-    setStudent("")
-    setInterviewer(null)
+    setStudent("");
+    setInterviewer(null);
     setError(null);
     return;
-  }
+  };
 
   const cancel = function () {
     reset();
     props.onCancel();
-  }
+  };
 
   const [error, setError] = useState("");
 
@@ -27,21 +26,19 @@ export default function Form(props) {
     if (!name) {
       setError("Student name cannot be blank");
       return;
-    }
-    else if (!interviewer) {
+    } else if (!interviewer) {
       setError("Please choose an interviewer");
       return;
-    }
-    else {
+    } else {
       setError(null);
       props.onSave(name, interviewer);
     }
-  }
+  };
 
   return (
     <main className="appointment__card appointment__card--create">
       <section className="appointment__card-left">
-        <form onSubmit={event => event.preventDefault()} autoComplete="off">
+        <form onSubmit={(event) => event.preventDefault()} autoComplete="off">
           <input
             className="appointment__create-input text--semi-bold"
             type="text"
@@ -64,10 +61,18 @@ export default function Form(props) {
 
       <section className="appointment__card-right">
         <section className="appointment__actions">
-          <Button className="appointment__card-right" confirm onClick={() => validate(student, interviewer)}>Save</Button>
-          <Button className="appointment__card-right" danger onClick={cancel}>Cancel</Button>
+          <Button
+            className="appointment__card-right"
+            confirm
+            onClick={() => validate(student, interviewer)}
+          >
+            Save
+          </Button>
+          <Button className="appointment__card-right" danger onClick={cancel}>
+            Cancel
+          </Button>
         </section>
       </section>
     </main>
-  )
+  );
 }
