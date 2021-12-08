@@ -1,7 +1,6 @@
 import React from "react";
 import { render, fireEvent, cleanup } from "@testing-library/react";
 import Form from "components/Appointment/Form";
-import { checkPropTypes } from "prop-types";
 
 afterEach(cleanup);
 

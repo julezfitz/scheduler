@@ -7,7 +7,7 @@ import {
   getByPlaceholderText,
   getByAltText,
   getAllByTestId,
-  prettyDOM,
+  // prettyDOM,
   getByText,
   fireEvent,
   cleanup,
@@ -64,13 +64,11 @@ describe("Application", () => {
   });
 
   it("loads data, cancels an interview and increases the spots remaining for Monday by 1", async () => {
-    // 1. Render the Application.
     const { container } = render(<Application />);
 
-    // 2. Wait until the text "Archie Cohen" is displayed.
     await waitForElement(() => getByText(container, "Archie Cohen"));
 
-    // 3. Click the "Delete" button on the booked appointment.
+    // Click the "Delete" button on the booked appointment.
     const appointment = getAllByTestId(container, "appointment").find(
       (appointment) => queryByText(appointment, "Archie Cohen")
     );
@@ -78,16 +76,16 @@ describe("Application", () => {
     const deleteButton = getByAltText(appointment, "Delete");
     fireEvent.click(deleteButton);
 
-    // 4. Check that the confirmation message is shown.
+    // Check that the confirmation message is shown.
     expect(
       queryByText(appointment, "Are you sure you would like to delete?")
     ).toBeInTheDocument();
 
-    // 5. Click the "Confirm" button on the confirmation.
+    // Click the "Confirm" button on the confirmation.
     const confirmButton = queryByText(appointment, "Confirm");
     fireEvent.click(confirmButton);
 
-    // 6. Check that the element with the text "Deleting" is displayed.
+    // Check that the element with the text "Deleting" is displayed.
     expect(getByText(appointment, "Deleting")).toBeInTheDocument();
 
     //Using websockets and therefore this will not work.
@@ -103,13 +101,11 @@ describe("Application", () => {
   });
 
   it("loads data, edits an interview and keeps the spots remaining for Monday the same", async () => {
-    // 1. Render the Application.
     const { container } = render(<Application />);
 
-    // 2. Wait until the text "Archie Cohen" is displayed.
     await waitForElement(() => getByText(container, "Archie Cohen"));
 
-    // 3. Click the "Edit" button on the booked appointment.
+    // Click the "Edit" button on the booked appointment.
     const appointment = getAllByTestId(container, "appointment").find(
       (appointment) => queryByText(appointment, "Archie Cohen")
     );
@@ -166,7 +162,7 @@ describe("Application", () => {
     fireEvent.click(getByText(appointment, "Save"));
     expect(getByText(container, "Saving")).toBeInTheDocument();
 
-    //will not work due to web socket implementation????
+    // Will not work due to web socket implementation
     // await waitForElement(() => getByText("There was an error saving your interview"));
     // expect(getByText(container, "There was an error saving your interview")).toBeInTheDocument();
     // console.log(prettyDOM(container));
@@ -193,7 +189,7 @@ describe("Application", () => {
 
     expect(getByText(appointment, "Deleting")).toBeInTheDocument();
 
-    //will not work due to web socket implementation
+    // Will not work due to web socket implementation
     // await waitForElement(() => getByText("There was an error deleting your interview"));
     // expect(getByText(container, "There was an error deleting your interview")).toBeInTheDocument();
     // console.log(prettyDOM(container));
