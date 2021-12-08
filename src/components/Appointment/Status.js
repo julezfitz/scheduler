@@ -2,6 +2,7 @@ import React from "react";
 import "./styles.scss";
 
 export default function Status(props) {
+
   return (
     <main className="appointment__card appointment__card--status">
       <img
@@ -11,5 +12,6 @@ export default function Status(props) {
       />
       <h1 className="text--semi-bold">{props.message}</h1>
     </main>
-  );
+  )
+
 }
