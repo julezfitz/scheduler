@@ -132,9 +132,7 @@ describe("Application", () => {
     // await waitForElement(() => getByText(appointment, "Lilly Walsh"));
 
     // // Find Monday and confirm that spots remaining is unchanged
-    // const day = getAllByTestId(container, "day").find(day =>
-    //   queryByText(day, "Monday")
-    // );
+    // const day = getAllByTestId(container, "day").find(day => queryByText(day, "Monday"));
 
     // expect(getByText(day, "1 spot remaining")).toBeInTheDocument();
   });
