@@ -44,14 +44,9 @@
     "@testing-library/react-hooks": "^7.0.2",
     "babel-loader": "^8.0.5",
     "node-sass": "^4.14.0",
+    "prettier": "2.5.1",
     "prop-types": "^15.7.2",
     "react-test-renderer": "^16.9.0"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.js",
-      "!src/index.js"
-    ]
   },
   "jest": {
     "collectCoverageFrom": [

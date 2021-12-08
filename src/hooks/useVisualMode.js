@@ -6,22 +6,22 @@ export const useVisualMode = function (initial) {
 
   const transition = function (newMode, replace = false) {
     if (replace) {
-      //do nothing    
+      //do nothing
     } else {
       //add state to history
-      const addHistory = newMode => (setHistory(history => ([newMode, ...history])))
+      const addHistory = (newMode) =>
+        setHistory((history) => [newMode, ...history]);
       addHistory(newMode);
     }
-    setMode(newMode)
-  }
+    setMode(newMode);
+  };
 
   const back = function () {
     if (history.length > 1) {
-      setMode(history[1])
+      setMode(history[1]);
       history.shift();
     }
-  }
+  };
 
   return { mode, transition, back };
-}
-
+};
