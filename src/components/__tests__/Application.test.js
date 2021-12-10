@@ -49,6 +49,7 @@ describe("Application", () => {
 
     fireEvent.click(getByText(appointment, "Save"));
 
+    waitForElement(() => getByText(appointment, "Saving"))
     expect(getByText(appointment, "Saving")).toBeInTheDocument();
 
     //Using websockets and therefore this will not work.
@@ -77,9 +78,7 @@ describe("Application", () => {
     fireEvent.click(deleteButton);
 
     // Check that the confirmation message is shown.
-    expect(
-      queryByText(appointment, "Are you sure you would like to delete?")
-    ).toBeInTheDocument();
+    queryByText(appointment, "Are you sure you would like to delete?");
 
     // Click the "Confirm" button on the confirmation.
     const confirmButton = queryByText(appointment, "Confirm");
@@ -125,7 +124,7 @@ describe("Application", () => {
 
     fireEvent.click(getByText(appointment, "Save"));
 
-    expect(getByText(appointment, "Saving")).toBeInTheDocument();
+    return expect(getByText(appointment, "Saving")).toBeInTheDocument();
 
     //Using websockets and therefore this will not work.
 
